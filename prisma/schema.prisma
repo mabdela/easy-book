@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Contact {
+  id          String   @id @default(uuid())
+  displayName String
+  email       String
+  aliases     String
+  createdAt   DateTime @default(now())
+
+  @@map("contacts")
+}
+
+model BookingRequest {
+  id         String   @id @default(uuid())
+  rawCommand String
+  parsedJson String
+  createdAt  DateTime @default(now())
+
+  meetings Meeting[]
+
+  @@map("booking_requests")
+}
+
+model Meeting {
+  id               String   @id @default(uuid())
+  bookingRequestId String
+  start            DateTime
+  end              DateTime
+  title            String
+  attendees        String
+  googleEventId    String?
+  createdAt        DateTime @default(now())
+
+  bookingRequest BookingRequest @relation(fields: [bookingRequestId], references: [id], onDelete: Cascade)
+
+  @@map("meetings")
+}
+
